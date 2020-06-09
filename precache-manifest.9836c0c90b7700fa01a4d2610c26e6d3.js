@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "f91a61031d0acf004a5b",
+    "revision": "a8c1950c3ed179ac53ad",
     "url": "/game-tear-a-form-on-mars/static/css/main.0282dce6.chunk.css"
   },
   {
-    "revision": "f91a61031d0acf004a5b",
-    "url": "/game-tear-a-form-on-mars/static/js/main.b8361749.chunk.js"
+    "revision": "a8c1950c3ed179ac53ad",
+    "url": "/game-tear-a-form-on-mars/static/js/main.97531488.chunk.js"
   },
   {
     "revision": "26dfa4a2fdee84ec8f86",
@@ -16,7 +16,7 @@ self.__precacheManifest = [
     "url": "/game-tear-a-form-on-mars/static/js/2.d0b4554a.chunk.js"
   },
   {
-    "revision": "446b1dd4109d885a184d7b9e8269998d",
+    "revision": "98387fc681b2a6958255fd36b9d29787",
     "url": "/game-tear-a-form-on-mars/index.html"
   }
 ];
