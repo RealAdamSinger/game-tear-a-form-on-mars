@@ -218,7 +218,7 @@ export default function App() {
                 minWidth: 0,
                 padding: 0,
                 border: "solid 1px #BBB",
-
+                cursor: "pointer",
                 color: backgroundColor ? defaultBackgroundColor === 'pink' ? 'pink' : defaultBackgroundColor === "#DDD" ? "#CCC" : "#FFF" : "#666"
               }}
             >
@@ -273,6 +273,7 @@ export default function App() {
                 width: 25,
                 minWidth: 0,
                 padding: 0,
+                cursor: "pointer",
                 border: "solid 1px #BBB",
                 color: "#BBB"
               }}
@@ -289,11 +290,11 @@ export default function App() {
     <div className="fill scroll-y">
       <LayoutDrawer>
         <Drawer className='padded-lg flex-center-middle' size="auto">
-          {Number.isFinite(pc1) ? <div className={'inline'} onClick={() => setPc1()}>{polyCards[pc1]} </div> : <button style={{ backgroundColor: "lightblue" }} onClick={() => onClickPc(setPc1)}>Shape Card 1</button>}
-          {Number.isFinite(pc2) ? <div className={'inline'} onClick={() => setPc2()}>{polyCards[pc2]} </div> : <button style={{ backgroundColor: "lightblue" }} onClick={() => onClickPc(setPc2)}>Shape Card 2</button>}
-          {Number.isFinite(rc1) ? <div className={'inline'} onClick={() => setRc1()}>{redirectCards[rc1]} </div> : <button style={{ backgroundColor: "orange" }} onClick={() => onClickRc(setRc1)}>Draw Redirect Card 1</button>}
-          {Number.isFinite(rc2) ? <div className={'inline'} onClick={() => setRc2()}>{redirectCards[rc2]} </div> : <button style={{ backgroundColor: "orange" }} onClick={() => onClickRc(setRc2)}>Draw Redirect Card 2</button>}
-          {Number.isFinite(rc3) ? <div className={'inline'} onClick={() => setRc3()}>{redirectCards[rc3]} </div> : <button style={{ backgroundColor: "orange" }} onClick={() => onClickRc(setRc3)}>Draw Redirect Card 3</button>}
+          {Number.isFinite(pc1) ? <div className={'inline'} onClick={() => setPc1()}>{polyCards[pc1]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "lightblue" }} onClick={() => onClickPc(setPc1)}>Shape Card 1</button>}
+          {Number.isFinite(pc2) ? <div className={'inline'} onClick={() => setPc2()}>{polyCards[pc2]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "lightblue" }} onClick={() => onClickPc(setPc2)}>Shape Card 2</button>}
+          {Number.isFinite(rc1) ? <div className={'inline'} onClick={() => setRc1()}>{redirectCards[rc1]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "orange" }} onClick={() => onClickRc(setRc1)}>Draw Redirect Card 1</button>}
+          {Number.isFinite(rc2) ? <div className={'inline'} onClick={() => setRc2()}>{redirectCards[rc2]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "orange" }} onClick={() => onClickRc(setRc2)}>Draw Redirect Card 2</button>}
+          {Number.isFinite(rc3) ? <div className={'inline'} onClick={() => setRc3()}>{redirectCards[rc3]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "orange" }} onClick={() => onClickRc(setRc3)}>Draw Redirect Card 3</button>}
         </Drawer>
         <Drawer className='flex-center-middle'>
           <div className="flex-middle flex-distribute fill-width" style={{ maxWidth: 900 }} >
@@ -363,6 +364,7 @@ export default function App() {
                   row={r}
                   column={c}
                   style={{
+                    cursor: "pointer",
                     width: (1 / 13 * 100) + "%",
                     padding: 0,
                     border: "solid 1px #CCC",
@@ -428,6 +430,7 @@ export default function App() {
                 style={{
                   width: 40,
                   padding: 0,
+                  cursor: "pointer",
                   border: "solid 1px #CCC",
                   color: "#CCC"
                 }}>
@@ -466,8 +469,10 @@ function getShapeTableJsx(shape, reward, mod, getCellColor, onClickCell, id) {
         style={{
           minWidth: 0,
           padding: 0,
+          cursor: "pointer",
           border: "solid 1px #CCC",
           color: "#CCC"
+
         }}
       >
         <div className="flex-center-middle align-center">
@@ -510,6 +515,7 @@ function generateTerraformCards(type) {
               minWidth: 0,
               padding: 0,
               border: "solid 1px #CCC",
+              cursor: "pointer",
               color: "#CCC"
             }}
           >
