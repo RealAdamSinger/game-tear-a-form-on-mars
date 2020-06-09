@@ -1,0 +1,16 @@
+.mainContainerColumn {
+  display: flex;
+  flex-direction: row;
+  overflow: auto;
+}
+
+.mainContainerRow {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.fill {
+  height: 100%;
+  width: 100%;
+}
