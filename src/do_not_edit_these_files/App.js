@@ -149,8 +149,20 @@ export default function App() {
   const [rc3, setRc3] = useState();
   const [rcIndex, setRcIndex] = useState(0)
 
-  const [pc1, setPc1] = useState()
-  const [pc2, setPc2] = useState()
+  const [pc1, _setPc1] = useState()
+  const [pc2, _setPc2] = useState()
+  const [completedCards, setCompletedCards] = useState([])
+
+  const setPc1 = useCallback(() => {
+    setCompletedCards([pc1, ...completedCards]);
+    _setPc1()
+  }, [completedCards, pc1])
+
+  const setPc2 = useCallback(() => {
+    setCompletedCards([pc2, ...completedCards]);
+    _setPc2()
+  }, [completedCards, pc2])
+
   const [pcIndex, setPcIndex] = useState(0)
 
   const onClickPc = useCallback((setPc) => {
@@ -163,13 +175,21 @@ export default function App() {
     setRcIndex(rcIndex + 1)
   }, [rcIndex])
 
+  const [mostRecentRover, setMostRecentRover] = useState([])
+
   const onClickCell = useCallback((r, c, name) => {
     if (!coloredRef.current[name]) coloredRef.current[name] = {}
     if (!coloredRef.current[name][r]) coloredRef.current[name][r] = {}
 
-    if (!coloredRef.current[name][r][c]) coloredRef.current[name][r][c] = "blue"
+    if (!coloredRef.current[name][r][c]) {
+      coloredRef.current[name][r][c] = name !== "points" ? "blue" : "#222"
+      if (name === "walk") {
+        setMostRecentRover([r, c])
+      }
+    }
     else if (coloredRef.current[name][r][c] === "blue") coloredRef.current[name][r][c] = "#222"
     else coloredRef.current[name][r][c] = undefined
+
     setColored({ ...coloredRef.current })
   }, [])
 
@@ -239,21 +259,21 @@ export default function App() {
         </HeaderCell>
       ))}
       {walkArray.map((i) => (
-        <RowHeaderCell className="flex-center-middle" id={alphabet[i]}>
-          <div className="flex-center-middle align-center"> {alphabet[i]}</div>
+        <RowHeaderCell className="flex-center-middle" id={i}>
+          <div className="flex-center-middle align-center"> {i}</div>
         </RowHeaderCell>
       ))}
       {walkArray.map((i) => (
         walkArray.map((a) => {
           let divider = ""
 
-          if ((!a && !i) || (a === walkArray.length - 1 && i === walkArray.length - 1)) divider = "🔷️"
+          if ((!a && !i) || (a === walkArray.length - 1 && i === walkArray.length - 1)) divider = "🔲️"
           else if ((!a && i === walkArray.length - 1) || (a === walkArray.length - 1 && !i)) divider = "🔶️"
           else if ((a + i) % 4 === 0 && a % 4 === 0) divider = "💰️"
-          else if ((a + i) % 8 === 0 && (a + 2) % 8 === 0) divider = "🔷️"
+          else if ((a + i) % 8 === 0 && (a + 2) % 8 === 0) divider = "🔲️"
           else if ((a + i) % 8 === 0 && (a + -2) % 8 === 0) divider = "🔶️"
           else if (i < 6 && (a + i + 5) % 8 === 0 && (a - 2) % 8 === 0) divider = "💣️"
-          else if ((a + i + 4) % 8 === 0 && (a - 2) % 8 === 0) divider = "💰️"
+          else if ((a + i + 4) % 8 === 0 && (a - 2) % 8 === 0) divider = "🔷️"
           else if (i < 6 && (a + i + 3) % 8 === 0 && (a - 2) % 8 === 0) divider = "💣️"
           else if ((a === ((walkArray.length - 1) / 2)) && (i === ((walkArray.length - 1) / 2))) divider = "🔲️"
           else if (i > 6 && (a + 1 + i + 4) % 8 === 0 && (a + 1 - 2) % 8 === 0) divider = "💣️"
@@ -262,12 +282,15 @@ export default function App() {
           else if ((a + i + 4) % 8 === 0 && (a - 1 + 2) % 8 === 0) divider = "💣️"
           else if ((a + i + 4) % 8 === 0 && (a + 1 + 2) % 8 === 0) divider = "💣️"
           else if ((a + i + 2) % 8 === 0 && (a - 1 + 2) % 8 === 0) divider = "💣️"
-
+          let cellColor = getCellColor(a, i, 'walk') || (a & 1 || i === ((walkArray.length - 1) / 4) || i === (walkArray.length - 1 - (walkArray.length - 1) / 4) ? "#DDD" : "#FFF");
+          if (cellColor === "blue" && (mostRecentRover[0] !== a || mostRecentRover[1] !== i)) {
+            cellColor = "#222"
+          }
           return (
             <TableCell
               onClick={() => onClickCell(a, i, 'walk')}
-              backgroundColor={getCellColor(a, i, 'walk') || (a & 1 || i === ((walkArray.length - 1) / 4) || i === (walkArray.length - 1 - (walkArray.length - 1) / 4) ? "#DDD" : "#FFF")}
-              row={alphabet[a]}
+              backgroundColor={cellColor}
+              row={a}
               column={i}
               style={{
                 width: 25,
@@ -286,169 +309,159 @@ export default function App() {
         }).filter(v => v))).flat()}
     </Table >
   )
+
   return (
-    <div className="fill scroll-y">
-      <LayoutDrawer>
-        <Drawer className='padded-lg flex-center-middle' size="auto">
-          {Number.isFinite(pc1) ? <div className={'inline'} onClick={() => setPc1()}>{polyCards[pc1]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "lightblue" }} onClick={() => onClickPc(setPc1)}>Shape Card 1</button>}
-          {Number.isFinite(pc2) ? <div className={'inline'} onClick={() => setPc2()}>{polyCards[pc2]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "lightblue" }} onClick={() => onClickPc(setPc2)}>Shape Card 2</button>}
-          {Number.isFinite(rc1) ? <div className={'inline'} onClick={() => setRc1()}>{redirectCards[rc1]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "orange" }} onClick={() => onClickRc(setRc1)}>Draw Redirect Card 1</button>}
-          {Number.isFinite(rc2) ? <div className={'inline'} onClick={() => setRc2()}>{redirectCards[rc2]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "orange" }} onClick={() => onClickRc(setRc2)}>Draw Redirect Card 2</button>}
-          {Number.isFinite(rc3) ? <div className={'inline'} onClick={() => setRc3()}>{redirectCards[rc3]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "orange" }} onClick={() => onClickRc(setRc3)}>Draw Redirect Card 3</button>}
-        </Drawer>
-        <Drawer className='flex-center-middle'>
-          <div className="flex-middle flex-distribute fill-width" style={{ maxWidth: 900 }} >
-            <div className="align-center">
-              Your Building Site
-              {gridJsx}
-            </div>
-            <div className="align-center">
-              Your Mars-Rover
-              {walkJsx}
-            </div>
-          </div>
-        </Drawer>
-        <Drawer size='auto' className='flex-center-middle'>
-          <div className="fill-width margin-sm padded" style={{ border: "solid #222 1px", maxWidth: 600 }}>
-            <div className="align-center fill-width padded bold font-md" style={{ textDecoration: "underline" }}>
-              Shop
-              </div>
-            <div className='flex-distribute'>
-              <div>2x💰️: +1 Redirect Card</div>
-              <div>3x💰️: +1 Shape Card</div>
-              <div>5x💰️: Fill 1 Grid Location</div>
-            </div>
-          </div>
-        </Drawer>
-        <Drawer className={'padded-md flex-center-middle'}>
-          {getShapeTableJsx("💰️", "💰️", 4, getCellColor, onClickCell, "orange")}
-        </Drawer>
-        <Drawer size={"auto"} className={'padded-lg flex-center-middle'} style={{ paddingTop: 0 }} >
-          Points
-          <div style={{ paddingRight: 10 }}>
-            ⭐️
-        </div>
-          <Table size="small" hideColumnHeaders rowHeight={25} width={600}>
-            {[...Array(12).keys()].map((i) => (
-              <HeaderCell className="flex-center-middle" id={i}>
-                <div className="flex-center-middle align-center"> {i + 1}</div>
-              </HeaderCell>
-            ))}
-            {[...Array(4).keys()].map((i) => {
-              const interval = i - 1 && i ? (i - 1) * 2 : 1
+    <div className="scroll-x flex fill">
+      <LayoutDrawer type="column" className="fill ">
+        <Drawer size="grow" minSize={300} className="background-e align-center scroll-y">
+          <div className="fill">
+            Completed Shapes
+        <br />
+            {completedCards.map((i) => {
               return (
-                <RowHeaderCell className="flex-center-middle" id={i} style={{
-                  width: (1 / 13 * 100) + "%",
-                  padding: 0,
-                  border: "solid 1px #CCC",
-                  color: "#AAA",
-                }}
-                >
-                  <div className="padded no-wrap flex-center-middle">
-                    <div style={{ color: interval === 2 ? "orange" : interval === 4 ? "red" : undefined }}>
-                      +{interval}
-                    </div>
-                  </div>
-                </RowHeaderCell>
+                <div className="inline padded">
+                  {polyCards[i]}
+                </div>
               )
             })}
-            {[...Array(4).keys()].map((r) => [...Array(24).keys()].map((c) => {
-              var value = (c + 1) * (r > 2 ? 4 : (r > 1 ? 2 : 1)) + (r * 12) + (r > 2 ? 12 : 0)
-              var x = (c + 1 + r * 24);
-              var bonus = value === 96 ? "END" : x % 16 === 0 ? "🔶️" : x % 8 === 0 ? "🔷️" : (x % 4 === 0 || value === 72 || value === 56) ? "💰️" : ""
-              return (
-                <TableCell
-                  className="flex-center-middle"
-                  onClick={() => onClickCell(r, c, 'points')}
-                  backgroundColor={getCellColor(r, c, 'points')}
-                  row={r}
-                  column={c}
-                  style={{
-                    cursor: "pointer",
-                    width: (1 / 13 * 100) + "%",
-                    padding: 0,
-                    border: "solid 1px #CCC",
-                    color: "#AAA",
-                  }}
-                >
-                  <div className={bonus ? "flex-middle flex-justify padded" : "flex-center-middle padded"}>
-                    <div>
-                      {value}
-                    </div>
-                    <div>
-                      {bonus}
-                    </div>
-                  </div>
-                </TableCell>
-              )
-            })).flat()}
-            {/* {[...Array(2).keys()].map((r) => [...Array(24).keys()].map((c) => {
-              var extraVal = (c + 1) * (r + 1) + increasingSum(r, 24) > 40 ? 2 : 0
-              var value = (c + 1) * (r + extraVal + 1) + increasingSum(r, 24)
-              var bonus = value === 12 ? "END" : (c + 1 + r * 24) % 16 === 0 ? "🔶️" : (c + 1 + r * 24) % 8 === 0 ? "🔷️" : (c + 1 + r * 24) % 4 === 0 ? "💰️" : ""
-              return (
-                <TableCell
-                  className="flex-center-middle"
-                  onClick={() => onClickCell(r, c, 'points')}
-                  backgroundColor={getCellColor(r, c, 'points', value > 85 ? '#FFF' : value > 24 ? "#EEE" : "#DDD")}
-                  row={r}
-                  column={c}
-                  style={{
-                    width: "5%",
-                    padding: 0,
-                    border: "solid 1px #CCC",
-                    color: "#AAA",
-                  }}
-                >
-                  <div className={bonus ? "flex-middle flex-justify" : "flex-center-middle"}>
-                    {bonus && <div className="padded" style={{ visibility: "hidden" }}></div>}
-                    <div>{value}</div>
-                    {bonus && <div className="padded"> {bonus} </div>}
-                  </div>
-                </TableCell>
-              )
-            })).flat()} */}
-          </Table>
+            <br></br>
+            <div className="inline" style={{ width: 250 }}></div><div className="inline" style={{ width: 250 }}></div>
+          </div>
         </Drawer>
-        <Drawer size={'auto'} className={'padded-lg flex-center-middle'} style={{ paddingTop: 0 }}>
+        <Drawer size="grow" minSize={800} className="padded-sm align-center background-f padded-lg scroll-y">
+          Play Area
+          <LayoutDrawer >
+            <Drawer className='flex-center-middle'>
+              <div className="flex-middle flex-distribute fill-width">
+                <div className="align-center">
+                  Your Building Site (It's on Mars!)
+              {gridJsx}
+                </div>
+                <div className="align-center">
+                  Your Mars-Rover
+              {walkJsx}
+                </div>
+              </div>
+            </Drawer>
+            <Drawer size='auto' className='flex-center-middle'>
+              <div className="fill-width margin-sm padded" style={{ border: "solid #222 1px" }}>
+                <div className="align-center fill-width padded bold font-md" style={{ textDecoration: "underline" }}>
+                  Shop
+              </div>
+                <div className='flex-distribute'>
+                  <div>2x💰️: +1 Redirect Card</div>
+                  <div>3x💰️: +1 Shape Card</div>
+                  <div>5x💰️: Fill 1 Grid Location</div>
+                </div>
+              </div>
+            </Drawer>
+            <Drawer className={'padded-md flex-center-middle'}>
+              {getShapeTableJsx("💰️", "💰️", 4, getCellColor, onClickCell, "orange")}
+            </Drawer>
+            <Drawer size={"auto"} className={'padded-lg flex-center-middle'} style={{ paddingTop: 0 }} >
+              Points
           <div style={{ paddingRight: 10 }}>
-            💣️
+                ⭐️
+        </div>
+              <Table size="small" hideColumnHeaders rowHeight={25} width={600}>
+                {[...Array(12).keys()].map((i) => (
+                  <HeaderCell className="flex-center-middle" id={i}>
+                    <div className="flex-center-middle align-center"> {i + 1}</div>
+                  </HeaderCell>
+                ))}
+                {[...Array(2).keys()].map((r) => [...Array(24).keys()].map((c) => {
+                  var value = (c + 1) + r * 12;
+
+                  let bonus = ""
+                  if (value === 24) {
+                    bonus = "END"
+                  } else if ([2, 10].includes(value)) {
+                    bonus = "🔷️"
+                  } else if ([5, 20].includes(value)) {
+                    bonus = "🔶️"
+                  } else if (value <= 6 || [8, 12, 14, 16, 18].includes(value)) {
+                    bonus = "💰️"
+                  } else if (value <= 12) {
+                    bonus = "🔲️"
+                  }
+                  return (
+                    <TableCell
+                      className="flex-center-middle"
+                      onClick={() => onClickCell(r, c, 'points')}
+                      backgroundColor={getCellColor(r, c, 'points')}
+                      row={r}
+                      column={c}
+                      style={{
+                        cursor: "pointer",
+                        width: (1 / 13 * 100) + "%",
+                        padding: 0,
+                        border: "solid 1px #CCC",
+                        color: "#AAA",
+                      }}
+                    >
+                      <div className={bonus ? "flex-middle flex-justify padded" : "flex-center-middle padded"}>
+                        <div>
+                          {value}
+                        </div>
+                        <div>
+                          {bonus}
+                        </div>
+                      </div>
+                    </TableCell>
+                  )
+                })).flat()}
+              </Table>
+            </Drawer>
+            <Drawer size={'auto'} className={'padded-lg flex-center-middle '} style={{ paddingTop: 0 }}>
+              <div style={{ paddingRight: 10 }}>
+                💣️
           </div>
-          <Table size="small" hideRowHeaders hideColumnHeaders rowHeight={25} width={40 * 15}>
-            {[...Array(15).keys()].map((i) => (
-              <HeaderCell className="flex-center-middle" id={i}>
-                <div className="flex-center-middle align-center"> {i + 1}</div>
-              </HeaderCell>
-            ))}
-            {[...Array(1).keys()].map((r) => [...Array(15).keys()].map((c) => (
-              <TableCell
-                className="flex-center-middle"
-                onClick={() => onClickCell(r, c, 'bombs')}
-                backgroundColor={getCellColor(r, c, 'bombs')}
-                row={r}
-                column={c}
-                style={{
-                  width: 40,
-                  padding: 0,
-                  cursor: "pointer",
-                  border: "solid 1px #CCC",
-                  color: "#CCC"
-                }}>
-                <div className="flex-center-middle align-center"> {(-6 * ((c + 1) + r * 15))}</div>
-              </TableCell>
-            ))).flat()}
-          </Table>
+              <Table size="small" hideRowHeaders hideColumnHeaders rowHeight={25} width={40 * 15}>
+                {[...Array(15).keys()].map((i) => (
+                  <HeaderCell className="flex-center-middle" id={i}>
+                    <div className="flex-center-middle align-center"> {i + 1}</div>
+                  </HeaderCell>
+                ))}
+                {[...Array(1).keys()].map((r) => [...Array(15).keys()].map((c) => (
+                  <TableCell
+                    className="flex-center-middle"
+                    onClick={() => onClickCell(r, c, 'bombs')}
+                    backgroundColor={getCellColor(r, c, 'bombs')}
+                    row={r}
+                    column={c}
+                    style={{
+                      width: 40,
+                      padding: 0,
+                      cursor: "pointer",
+                      border: "solid 1px #CCC",
+                      color: "#CCC"
+                    }}>
+                    <div className="flex-center-middle align-center"> {(-2 * ((c + 1) + r * 15))}</div>
+                  </TableCell>
+                ))).flat()}
+              </Table>
+            </Drawer>
+            <Drawer >
+              <div className="flex-center-middle fill">
+                Secret Objectives (Fit these in empty spaces at game end to gain their points)
+          </div>
+              <div className="flex-center-middle fill">
+                {[secretPoly3, secretPoly4, secretPoly5].map(v => generatePolyominos(v, true))}
+              </div>
+            </Drawer>
+          </LayoutDrawer >
         </Drawer>
-        <Drawer >
-          <div className="flex-center-middle fill">
-            Secret Objectives (Fit these in empty spaces at game end to gain their points)
-          </div>
-          <div className="flex-center-middle fill">
-            {[secretPoly3, secretPoly4, secretPoly5].map(v => generatePolyominos(v, true))}
-          </div>
+        <Drawer className='padded-lg align-center background-e scroll-y' size="grow" minSize={300} >
+          Your Hand <br></br>
+          {Number.isFinite(pc1) ? <div className={'inline-top'} onClick={() => setPc1()}>{polyCards[pc1]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "lightblue", width: "2in", height: "3in" }} onClick={() => onClickPc(_setPc1)}>Shape Card 1</button>}
+          {Number.isFinite(pc2) ? <div className={'inline-top'} onClick={() => setPc2()}>{polyCards[pc2]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "lightblue", width: "2in", height: "3in" }} onClick={() => onClickPc(_setPc2)}>Shape Card 2</button>}
+          <br></br><br></br>
+          {Number.isFinite(rc1) ? <div className={'inline-top'} onClick={() => setRc1()}>{redirectCards[rc1]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "orange", width: 250, height: 250 }} onClick={() => onClickRc(setRc1)}>Draw Redirect Card 1</button>}
+          {Number.isFinite(rc2) ? <div className={'inline-top'} onClick={() => setRc2()}>{redirectCards[rc2]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "orange", width: 250, height: 250 }} onClick={() => onClickRc(setRc2)}>Draw Redirect Card 2</button>}
+          {Number.isFinite(rc3) ? <div className={'inline-top'} onClick={() => setRc3()}>{redirectCards[rc3]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "orange", width: 250, height: 250 }} onClick={() => onClickRc(setRc3)}>Draw Redirect Card 3</button>}
         </Drawer>
       </LayoutDrawer >
-    </div >
+    </div>
   );
 }
 
@@ -573,10 +586,10 @@ function generateTerraformCards(type) {
 const rewards = {
   1: { vp: 0, coin: 4 },
   2: { vp: 0, coin: 5 },
-  3: { vp: 4, coin: 2 },
-  4: { vp: 4, coin: 4 },
-  5: { vp: 8, coin: 2 },
-  6: { vp: 8, coin: 4 }
+  3: { vp: 1, coin: 2 },
+  4: { vp: 1, coin: 4 },
+  5: { vp: 2, coin: 2 },
+  6: { vp: 2, coin: 4 }
 }
 
 function generatePolyominos(shape, hideCoins) {
@@ -585,7 +598,7 @@ function generatePolyominos(shape, hideCoins) {
   const columns = maxBy(shape, "0")[0] + 1;
 
   return (
-    <div className="inline-top relative" style={{ width: '2in', height: "3in", border: "solid #EEE 1px" }}>
+    <div className="inline-top relative background-f" style={{ width: '2in', height: "3in", border: "solid #EEE 1px" }}>
       <div className="bottom-right padded-mdn font-lg">
         {!hideCoins && <div>
           {rewards[shape.length].coin} 💰️
