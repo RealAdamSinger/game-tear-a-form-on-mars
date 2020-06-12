@@ -314,13 +314,18 @@ export default function App() {
     <div className="scroll-x flex fill">
       <LayoutDrawer type="column" className="fill ">
         <Drawer size="grow" minSize={300} className="background-e align-center scroll-y">
-          <div className="fill">
+          <div className="fill" style={{ direction: 'rtl' }}>
             Completed Shapes
         <br />
-            {completedCards.map((i) => {
+            {completedCards.map((v, i) => {
+              const card = i + 1
+              let opacity = .5;
+              if (card === 1) opacity = 1
               return (
-                <div className="inline padded">
-                  {polyCards[i]}
+                <div className={(card === 1 ? "" : "inline") + " padded align-center"} style={{ direction: "ltr", opacity }}>
+                  {completedCards.length - i}
+                  <br></br>
+                  {polyCards[v]}
                 </div>
               )
             })}
