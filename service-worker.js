@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/game-tear-a-form-on-mars/precache-manifest.59e6a4c5b39ef413ae1afc8fc123c7ab.js"
+  "/game-tear-a-form-on-mars/precache-manifest.7c3ace69fa1bdd777237181fcd4f8ca2.js"
 );
 
 workbox.clientsClaim();
