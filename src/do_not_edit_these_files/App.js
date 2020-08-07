@@ -290,15 +290,14 @@ export default function App() {
           <div className="flex-center-middle align-center"> {i + 1}</div>
         </HeaderCell>
       ))}
-      {walkArray.map((i) => (
-        <RowHeaderCell className="flex-center-middle" id={i}>
-          <div className="flex-center-middle align-center"> {i}</div>
+      {walkArray.map((a) => (a === 122) ? null : (
+        <RowHeaderCell className="flex-center-middle" id={a}>
+          <div className="flex-center-middle align-center"> {a}</div>
         </RowHeaderCell>
       ))}
       {walkArray.map((i) => (
         walkArray.map((a) => {
           let divider = ""
-
           if ((!a && !i) || (a === walkArray.length - 1 && i === walkArray.length - 1)) divider = SHAPE
           else if ((!a && i === walkArray.length - 1) || (a === walkArray.length - 1 && !i)) divider = TARGET
           else if ((a + i) % 4 === 0 && a % 4 === 0) divider = GOLDLEAF
@@ -319,6 +318,8 @@ export default function App() {
           else if ((a + i + 4) % 8 === 0 && (a + 1 + 2) % 8 === 0) divider = PEPPER
           else if ((a + i + 2) % 8 === 0 && (a - 1 + 2) % 8 === 0) divider = PEPPER
           // else if (!(a & 1) && i === 0) divider = GOLDLEAF
+          // else if ((a + i) % 4 === 0 && i%3===0) divider = POINTEDFLOWER
+          else if (a % 2 === 0 && i % 2 === 0) divider = POINTEDFLOWER
 
           let defaultCellColor = (a & 1 || i === ((walkArray.length - 1) / 4) || i === (walkArray.length - 1 - (walkArray.length - 1) / 4) ? BROWNTILE : GREENTILE);
           if (a === 2 || a === 10) {
@@ -349,9 +350,33 @@ export default function App() {
               </div>
             </TableCell>
           )
-        }).filter(v => v))).flat()}
+        }).filter(v => v))).flat().filter(a => a)}
     </Table >
   )
+
+
+  // SHAPECARDS
+  // return <div className={"fill-width"}>
+  //   {[
+  //     // hexominos,
+  //     // pentominos, pentominos,
+  //     quadominos, quadominos, quadominos,
+  //     triominos, triominos, triominos, triominos,
+  //     duelominos, duelominos, duelominos, duelominos, duelominos,
+  //     block, block, block, block, block, block,
+  //   ].flat().map(v => <div className="inline" style={{ border: "1px solid #AAA" }}>
+  //     {generatePolyominos(v)}
+  //     {/* <div className="flex-center-middle" style={{ width: '2in', height: "3in", fontSize: 20 }}>
+  //       <div>6</div>
+  //     </div> */}
+  //   </div>
+  //   )}
+  // </div>
+
+  // return <div>
+  //   {redirectCards}
+  // </div>
+
 
   return (
     <div className="scroll-x flex fill">
@@ -377,7 +402,7 @@ export default function App() {
           </div>
         </Drawer>
         <Drawer size="grow" minSize={800} className="padded-sm align-center background-f padded-lg scroll-y">
-          Blight
+          {/* Blight */}
           <LayoutDrawer >
             <Drawer >
               <LayoutDrawer type="column">
@@ -398,7 +423,7 @@ export default function App() {
                   </div>
                 </Drawer>
                 <Drawer>
-                  <b>
+                  {/* <b>
                     Set Up
                   </b>
                   <ol>
@@ -422,32 +447,65 @@ export default function App() {
                     <li className="align-left">
                       Draw an "X" in any space on the Greenhouse matching the color of the space you filled in for the previous step. Gain its benefits, if any.
                     </li>
-                  </ol>
+                  </ol> */}
 
                   <b>
-                    Legend
+                    Legend (Max 2 Shapes, 3 Redirect)
+                  </b>
+                  <div className="fill-width padded-md">
+                    <Table hideColumnHeaders className="fill-width">
+                      <HeaderCell id='icon' style={{ margin: 4, padding: 4 }} />
+                      <HeaderCell id='descr' style={{ margin: 4, padding: 4 }} />
+                      <TableCell column="icon" row={1} style={{ margin: 5, padding: 10 }}>
+                        {GOLDLEAF}
+                      </TableCell>
+                      <TableCell column="descr" row={1} style={{ margin: 5, padding: 10 }}>
+                        Gain 1 {GOLDLEAF} by circling it on the {GOLDLEAF} Track.
+                    </TableCell>
+                      <TableCell column="icon" row={2} style={{ padding: 6 }}>
+                        <i style={{ color: "#CCC" }} class="fas fa-dove"></i>
+                      </TableCell>
+                      <TableCell column="descr" row={2} style={{ padding: 6 }}>
+                        Move Caterpillar up to 6 spaces. Draw an "X" in both the spaces it leaves and enters.
+                    </TableCell>
+                      <TableCell column="icon" row={3} style={{ padding: 6 }}>
+                        {PEPPER}
+                      </TableCell>
+                      <TableCell column="descr" row={3} style={{ padding: 6 }}>
+                        All other Players move Caterpillar up to 3 spaces of their choice. <br></br>-1 Point at game end.
+                        </TableCell>
+                      <TableCell column="icon" row={4.5} style={{ padding: 6 }}>
+                        {POINTEDFLOWER}
+                      </TableCell>
+                      <TableCell column="descr" row={4.5} style={{ padding: 6 }}>
+                        Fill an adjacent space for free.
+                    </TableCell>
+                      <TableCell column="icon" row={4} style={{ padding: 6 }}>
+                        {FLOWER}
+                      </TableCell>
+                      <TableCell column="descr" row={4} style={{ padding: 6 }}>
+                        Increase Point Track by 1.
+                    </TableCell>
+                      <TableCell column="icon" row={5} style={{ padding: 6 }}>
+                        {SHAPE}
+                      </TableCell>
+                      <TableCell column="descr" row={5} style={{ padding: 6 }}>
+                        Gain a Shape Card.
+                    </TableCell>
+                      <TableCell column="icon" row={6} style={{ padding: 6 }}>
+                        {TARGET}
+                      </TableCell>
+                      <TableCell column="descr" row={6} style={{ padding: 6 }}>
+                        Gain a Redirect Card.
+                    </TableCell>
+                    </Table>
+                  </div>
+                  <b>
+                    On Your Turn
                   </b>
                   <ul>
                     <li className="align-left">
-                      {GOLDLEAF} - Gain 1 {GOLDLEAF} by circling it on the {GOLDLEAF} Track.
-                    </li>
-                    <li className="align-left">
-                      {POINTEDFLOWER} - Fill in an adjacent space for free.
-                    </li>
-                    <li className="align-left">
-                      <i style={{ color: "#CCC" }} class="fas fa-dove"></i> - Move Caterpillar 3 spaces. Draw an "X" in the space it leaves and enters.
-                    </li>
-                    <li className="align-left">
-                      {PEPPER} - All other Players gain 1 {FLOWER}.
-                    </li>
-                    <li className="align-left">
-                      {FLOWER} - Increase Point Track by 1.
-                    </li>
-                    <li className="align-left">
-                      {SHAPE} - Gain a Shape Card.
-                    </li>
-                    <li className="align-left">
-                      {TARGET} - Gain a Redirect Card.
+                      In any order, select one space on the Garden to fill privately, and announce one to fill publicly.
                     </li>
                   </ul>
 
@@ -458,23 +516,35 @@ export default function App() {
                     <li className="align-left">
                       After filling in a space on the Garden, you must immediately mark a space of the same color on the Greenhouse adjacent to your Caterpillar if possible. Mark this space by drawing an arrow away from the previous space.
                     </li>
-                    <li className="align-left">
+                    {/* <li className="align-left">
                       You may make a purchase from the shop at any time. Cross out any {GOLDLEAF} used.
-                    </li>
+                    </li> */}
                   </ul>
 
                   <b>
-                    On Your Turn
+                    Store
                   </b>
                   <ul>
                     <li className="align-left">
-                      In any order, select one space on the Garden to fill privately, and one to fill publicly.
+                      2x{GOLDLEAF} : +1 Redirect Card
+                    </li>
+                    <li className="align-left">
+                      3x{GOLDLEAF} : +1 Shape Card
+                    </li>
+                    {/* <li className="align-left">
+                      4x{GOLDLEAF} : Discard 1 Card
+                    </li> */}
+                    <li className="align-left">
+                      5x{GOLDLEAF} : Fill 1 Grid Location
                     </li>
                   </ul>
+                  <div className="flex-center-middle fill-width">
+                    {getShapeTableJsx(GOLDLEAF, GOLDLEAF, 4, getCellColor, onClickCell, "orange", 10, 5)}
+                  </div>
                 </Drawer>
               </LayoutDrawer>
             </Drawer>
-            <Drawer size='auto' className='flex-center-middle'>
+            {/* <Drawer size='auto' className='flex-center-middle'>
               <div className="fill-width margin-sm padded flex" style={{ border: "solid #222 1px" }}>
                 <div className="align-center fill-width padded bold font-md" style={{ textDecoration: "underline" }}>
                   Shop
@@ -488,11 +558,11 @@ export default function App() {
                   <div>5x{GOLDLEAF}: Fill 1 Grid Location</div>
                 </div>
               </div>
-            </Drawer>
-            <Drawer className={'padded-md flex-center-middle'}>
+            </Drawer> */}
+            {/* <Drawer className={'padded-md flex-center-middle'}>
               {getShapeTableJsx(GOLDLEAF, GOLDLEAF, 4, getCellColor, onClickCell, "orange")}
-            </Drawer>
-            <Drawer size={"auto"} className={'padded-lg flex-center-middle'} style={{ paddingTop: 0 }} >
+            </Drawer> */}
+            <Drawer size={"auto"} className={'padded-lg flex-center-middle'} style={{ paddingTop: 10 }} >
               Points
               <div style={{ paddingRight: 10 }}>
                 {FLOWER}
@@ -507,7 +577,7 @@ export default function App() {
                   var value = (c + 1) + r * 12;
 
                   let bonus = ""
-                  if (value === 24) {
+                  if (value === 12) {
                     bonus = "END"
                   } else if ([2, 11].includes(value)) {
                     bonus = SHAPE
@@ -597,18 +667,18 @@ export default function App() {
           {Number.isFinite(rc3) ? <div className={'inline-top margin'} style={{ border: "solid 2px orange", lineHeight: 0 }} onClick={() => setRc3()}>{redirectCards[rc3]} </div> : <button style={{ margin: 3, cursor: "pointer", backgroundColor: "orange", width: 254, height: 255 }} onClick={() => onClickRc(setRc3)}>Draw Redirect Card</button>}
         </Drawer>
       </LayoutDrawer >
-    </div>
+    </div >
   );
 }
 
-function getShapeTableJsx(shape, reward, mod, getCellColor, onClickCell, id) {
-  return <Table size="small" hideRowHeaders hideColumnHeaders rowHeight={25} width={500}>
-    {[...Array(20).keys()].map((i) => (
+function getShapeTableJsx(shape, reward, mod, getCellColor, onClickCell, id, width = 20, height = 4) {
+  return <Table size="small" hideRowHeaders hideColumnHeaders rowHeight={25} width={width * 25}>
+    {[...Array(width).keys()].map((i) => (
       <HeaderCell className="flex-center-middle" id={i}>
         <div className="flex-center-middle align-center"> {i + 1}</div>
       </HeaderCell>
     ))}
-    {[...Array(4).keys()].map((r) => [...Array(20).keys()].map((c) => (
+    {[...Array(height).keys()].map((r) => [...Array(20).keys()].map((c) => (
       <TableCell
         className="flex-center-middle"
         onClick={() => onClickCell(r, c, id)}
@@ -625,7 +695,7 @@ function getShapeTableJsx(shape, reward, mod, getCellColor, onClickCell, id) {
         }}
       >
         <div className="flex-center-middle align-center">
-          {((c + 1) + r * 20) % mod === 0 ? reward : shape}
+          {((c + 1) + r * width) % mod === 0 ? reward : shape}
         </div>
       </TableCell>
     ))).flat()}
@@ -721,11 +791,11 @@ function generateTerraformCards(type) {
 
 const rewards = {
   1: { vp: 0, coin: 4 },
-  2: { vp: 0, coin: 5 },
+  2: { vp: 0, coin: 6 },
   3: { vp: 1, coin: 2 },
-  4: { vp: 1, coin: 4 },
+  4: { vp: 1, coin: 6 },
   5: { vp: 2, coin: 2 },
-  6: { vp: 2, coin: 4 }
+  6: { vp: 2, coin: 6 }
 }
 
 function generatePolyominos(shape, secret) {
@@ -784,6 +854,7 @@ function generatePolyominos(shape, secret) {
           </Table>
         </div>
       </div>
+
     </div>
   )
 }
